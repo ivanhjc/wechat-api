@@ -75,4 +75,19 @@
         </testResources>
         <finalName>${project.artifactId}</finalName>
     </build>
+
+	<distributionManagement>
+        <repository>
+            <id>my-nexus-releases</id>
+            <url>
+                http://192.168.10.245:8081/nexus/content/repositories/releases/
+            </url>
+        </repository>
+        <snapshotRepository>
+            <id>my-nexus-snapshot</id>
+            <url>
+                http://192.168.10.245:8081/nexus/content/repositories/snapshots/
+            </url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
