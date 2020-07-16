@@ -8,12 +8,29 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.AlgorithmParameters;
 
+public class CryptUtils {
 
-/**
- * @author yyb
- * @since 2018-01-10
- */
-public class WxCryptUtils {
+    /**
+     * 数据加密
+     *
+     * @param data       需要加密的数据
+     * @param iv         对称加密算法初始向量
+     * @param sessionKey 对称加密秘钥
+     * @return 加密数据
+     */
+    public static String encrypt(String data, String iv, String sessionKey) throws Exception {
+        AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance("AES");
+        algorithmParameters.init(new IvParameterSpec(Base64.decodeBase64(iv)));
+        Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(Base64.decodeBase64(sessionKey), "AES"), algorithmParameters);
+        byte[] textBytes = data.getBytes(StandardCharsets.UTF_8);
+        ByteGroup byteGroup = new ByteGroup();
+        byteGroup.addBytes(textBytes);
+        byte[] padBytes = PKCS7Encoder.encode(byteGroup.size());
+        byteGroup.addBytes(padBytes);
+        byte[] encryptBytes = cipher.doFinal(byteGroup.toBytes());
+        return Base64.encodeBase64String(encryptBytes);
+    }
 
     /**
      * 小程序 数据解密
@@ -31,27 +48,5 @@ public class WxCryptUtils {
         byte[] decode = PKCS7Encoder.decode(cipher.doFinal(Base64.decodeBase64(encryptData)));
         String decryptStr = new String(decode, StandardCharsets.UTF_8);
         return decryptStr;
-    }
-    
-    /**
-     * 数据加密
-     * 
-     * @param data          需要加密的数据
-     * @param iv            对称加密算法初始向量
-     * @param sessionKey    对称加密秘钥
-     * @return  加密数据
-     */
-    public static String encrypt(String data, String iv, String sessionKey) throws Exception {
-        AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance("AES");
-        algorithmParameters.init(new IvParameterSpec(Base64.decodeBase64(iv)));
-        Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(Base64.decodeBase64(sessionKey), "AES"), algorithmParameters);
-        byte[] textBytes = data.getBytes(StandardCharsets.UTF_8);
-        ByteGroup byteGroup= new ByteGroup();
-        byteGroup.addBytes(textBytes);
-        byte[] padBytes = PKCS7Encoder.encode(byteGroup.size());
-        byteGroup.addBytes(padBytes);
-        byte[] encryptBytes = cipher.doFinal(byteGroup.toBytes());
-        return Base64.encodeBase64String(encryptBytes);
     }
 }

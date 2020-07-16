@@ -3,7 +3,7 @@ package net.ivanhjc.wechat.api.mini.app;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import net.ivanhjc.utility.net.HttpClientHelper;
+import net.ivanhjc.utility.net.HttpUtils;
 import net.ivanhjc.wechat.api.mini.app.request.WeChatSendSubscribedMessageRequest;
 import net.ivanhjc.wechat.api.mini.app.result.WeChatJSCode2SessionResult;
 import net.ivanhjc.wechat.api.mini.app.result.WeChatTokenResult;
@@ -32,7 +32,7 @@ public class WeChatMiniAPIClient {
     public WeChatJSCode2SessionResult jsCode2Session(String code) {
         String requestURL = "https://api.weixin.qq.com/sns/jscode2session?appid=" + appId + "&secret=" + appSecret + "&js_code=" + code + "&grant_type=authorization_code";
         logger.debug("jsCode2Session request: " + requestURL);
-        String result = HttpClientHelper.getInstance().get(requestURL);
+        String result = HttpUtils.getInstance().get(requestURL);
         logger.debug("jsCode2Session result: " + result);
         return new Gson().fromJson(result, WeChatJSCode2SessionResult.class);
     }
@@ -43,7 +43,7 @@ public class WeChatMiniAPIClient {
     public WeChatTokenResult token() {
         String requestURL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appId + "&secret=" + appSecret;
         logger.debug("token request: " + requestURL);
-        String result = HttpClientHelper.getInstance().get(requestURL);
+        String result = HttpUtils.getInstance().get(requestURL);
         logger.debug("token result: " + result);
         WeChatTokenResult weChatTokenResult = new Gson().fromJson(result, WeChatTokenResult.class);
         //微信返回过期时间7200秒，实际过期时间要更短，所以采取1小时更新一次
@@ -77,7 +77,7 @@ public class WeChatMiniAPIClient {
         }
         String json = requestBody.toString();
         logger.debug("sendSubscribedMessage request: " + requestURL + ", params: " + json);
-        String result = HttpClientHelper.getInstance().postJSON(requestURL, json);
+        String result = HttpUtils.getInstance().postJSON(requestURL, json);
         logger.debug("sendSubscribedMessage result: " + result);
     }
 }
